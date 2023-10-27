@@ -6,11 +6,11 @@ class User{
 
     async findAll(){
         try{
-            var result = await knex.select(["id_usuario","email","name", "username", "u.id_prop", "m.nome as municipio"])
-            .column(knex.raw("(CASE role WHEN 1 THEN 'Estado' WHEN 2 THEN 'Município' ELSE 'Outro' END) as role"))
+            var result = await knex.select(["u.id_usuario","email","name", "username", "u.id_prop", "un.nome as unidade"])
+            .column(knex.raw("(CASE role WHEN 1 THEN 'Administrador' WHEN 2 THEN 'Gestor' ELSE 'Outro' END) as role"))
             .table("usuario as u")
-            .join("municipio as m","m.id_municipio", '=' , "u.id_municipio")
-            .where({deleted: 0});
+            .join("unidade as un","un.id_unidade", '=' , "u.id_unidade")
+            .where({ 'u.deleted': 0});
             return result;
         }catch(err){
             console.log(err);
