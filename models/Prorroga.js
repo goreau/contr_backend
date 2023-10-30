@@ -8,6 +8,7 @@ class Prorroga {
     try {
       var { id_contrato, ordem, dt_inicio, dt_final, dt_pj, id_usuario, encaminhado, num_ta, observacao, valor } = dados;
 
+      dt_pj = dt_pj == '' ? 'infinity' : dt_pj;
       const result = await knex
         .insert({
             id_contrato, ordem, dt_inicio, dt_final, dt_pj, id_usuario, encaminhado, num_ta, observacao, valor
@@ -26,6 +27,7 @@ class Prorroga {
         id_prorroga, id_contrato, ordem, dt_inicio, dt_final, dt_pj, id_usuario, encaminhado, num_ta, observacao, valor
       } = dados;
 
+      dt_pj = dt_pj == '' ? 'infinity' : dt_pj;
       await knex("prorroga")
         .where("id_prorroga", id_prorroga)
         .update({
@@ -42,8 +44,14 @@ class Prorroga {
       var result = [];
 
       result = await knex
-        .select("*")
-        .table("prorroga")
+        .select(["p.*", "u.nome as unidade"])
+        .column(knex.raw(
+          "CONCAT(c.num_contrato, '/', c.descricao) as contrato"
+      ))
+        .table("prorroga as p")
+        .join("contrato as c", "c.id_contrato", "=", "p.id_contrato")
+        .join("unidade as u", "u.id_unidade", "=", "c.id_unidade")
+        .where("c.deleted", "=", 0)
         .orderBy("id_prorroga", "desc");
 
       return result;
@@ -60,14 +68,8 @@ class Prorroga {
 
       result = await knex
         .select("c.*")
-        .column(
-          knex.raw(
-            "u.nome as unidade"
-          )
-        )
         .table("prorroga as c")
-        .where("id_prorroga", "=", id)
-        .join("unidade as u", "u.id_unidade", "=", "c.id_unidade");
+        .where("id_prorroga", "=", id);
 
       return result[0];
     } catch (err) {

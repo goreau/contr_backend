@@ -41,8 +41,12 @@ class ContratoController {
     res.json(locs);
   }
 
+  async getCombo(req, res) {
+    var filter = req.params.unid;
+    var locs = await Contrato.getCombo(filter);
+    res.json(locs);
+  }
   
-
   async delete(req, res) {
     var id = req.params.id;
     var result = await Contrato.delete(id);

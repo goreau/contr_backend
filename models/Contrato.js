@@ -95,11 +95,12 @@ class Contrato {
       var result = [];
 
       result = await knex
-        .select(["c.id_contrato", 'c.codigo'])
+        .select(["c.id_contrato"])
+        .column(knex.raw(
+            "CONCAT(c.num_contrato, '/', c.descricao) as nome"
+        ))
         .table("contrato as c")
-        .leftJoin("identificacao as i", "i.id_contrato", "=", "c.id_contrato")
-        .where("c.id_municipio", "=", mun)
-        .whereNull('i.id_identificacao')
+        .where("c.deleted", "=", 0);
         
       return result;
     } catch (err) {

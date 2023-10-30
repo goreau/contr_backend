@@ -170,9 +170,7 @@ class UserController{
                     res.status(406);
                     res.json({status: false,message:"Credenciais incorretas!"});
                 }
-                console.log(user);
                 var resultado = await bcrypt.compare(password,user.password);
-                console.log(resultado)
 
                 if(resultado){
 
