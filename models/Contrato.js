@@ -1,4 +1,4 @@
-//id_contrato, id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor, 
+//id_contrato, id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor, id_natureza
 //id_usuario, duracao, descricao, observacao, empresa, valor, deleted, created_at, updated_at
 
 var knex = require("../database/connection");
@@ -6,11 +6,11 @@ var knex = require("../database/connection");
 class Contrato {
   async create(dados) {
     try {
-      var { id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor } = dados;
+      var { id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor, id_natureza } = dados;
 
       const result = await knex
         .insert({
-            id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor
+            id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor, id_natureza
         })
         .table("contrato");
 
@@ -23,13 +23,13 @@ class Contrato {
   async update(dados) {
     try {
       var {
-        id_contrato, id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor
+        id_contrato, id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor, id_natureza
       } = dados;
 
       await knex("contrato")
         .where("id_contrato", id_contrato)
         .update({
-            id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor
+            id_unidade, num_contrato, num_processo, dt_inicio, dt_final, gestor,id_usuario, duracao, descricao, observacao, empresa, valor, id_natureza
         });
     } catch (err) {
       console.log(err);
@@ -42,9 +42,10 @@ class Contrato {
       var result = [];
 
       result = await knex
-        .select("c.*",  'u.nome as unidade')
+        .select("c.*",  'u.nome as unidade', 'n.nome as natureza')
         .table("contrato as c")
         .join("unidade as u", "u.id_unidade", "=", "c.id_unidade")
+        .join("natureza as n", "c.id_natureza", "=", "n.id_natureza")
         .orderBy("id_contrato", "desc");
 
       return result;
